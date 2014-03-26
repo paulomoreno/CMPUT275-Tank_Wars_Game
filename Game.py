@@ -10,8 +10,8 @@ class Game():
 		"""
 		Lads the information according to the level
 		"""
-		self.p1_tank = Tank(100, 1)
-		self.p2_tank = Tank(400, 1)
+		self.p1_tank = Tank([100, 150], 0)
+		self.p2_tank = Tank([400, 150], 1)
 
 		self.turn = 0
 
