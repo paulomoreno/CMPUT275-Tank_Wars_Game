@@ -15,7 +15,7 @@ Requirements
 
 How to install pygame
 
-'''
+'''bash
 #install dependencies
 sudo apt-get install mercurial python3-dev python3-numpy ffmpeg \
     libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsmpeg-dev \
