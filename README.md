@@ -3,9 +3,9 @@ CMPUT275-Tank_Wars_Game
 
 Authors:
 
-	- Brandon Hayduk
+- Brandon Hayduk
 
-	- Paulo H O Moreno
+- Paulo H O Moreno
 
 Description
 ===========
