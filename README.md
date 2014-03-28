@@ -16,11 +16,11 @@ The game will have three sections: player 1 area, scenario, and player 2 area. T
 
 Specific Details:
 
-	- 2D game (think “worms” http://en.wikipedia.org/wiki/Worms_(series) )
+- 2D game (think “worms” http://en.wikipedia.org/wiki/Worms_(series) )
 
-		- “View” will be from the side, think cross section. 
-		
-		- Game will likely use pygame 
+	- “View” will be from the side, think cross section. 
+
+	- Game will likely use pygame 
 
 
 
