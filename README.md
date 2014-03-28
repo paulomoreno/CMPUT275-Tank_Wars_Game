@@ -15,7 +15,7 @@ Requirements
 
 How to install pygame
 
-'''bash
+```bash
 #install dependencies
 sudo apt-get install mercurial python3-dev python3-numpy ffmpeg \
     libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsmpeg-dev \
@@ -28,4 +28,4 @@ hg clone https://bitbucket.org/pygame/pygame
 cd pygame
 python3 setup.py build
 sudo python3 setup.py install
-'''
+```
