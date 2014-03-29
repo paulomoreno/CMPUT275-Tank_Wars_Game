@@ -3,6 +3,7 @@ from maps import Map
 
 # The status bar (bottom bar) height
 STATUS_BAR_HEIGHT = 120
+STATUS_BAR_COLOR = (55,55,55)
 
 class Interface():
     """
@@ -16,10 +17,16 @@ class Interface():
         self._pygame = pygame
         self._bg_color = bg_color
 
+
         # Load the level information
         # This method also initialize the screen size
         #   according to the map size
         self._loadLevel()
+
+        # The status bar
+        self.status_bar = pygame.Rect(0, self._map_resolution[1],
+                                     self._screen_resolution[0],
+                                     STATUS_BAR_HEIGHT)
 
         #THIS IS ONLY FOR TEST PURPOSES
         self.cont = 0
@@ -32,6 +39,7 @@ class Interface():
         self._windowSurfaceObj.fill(bg_color)
 
         self._map.paintMountain(self._windowSurfaceObj)
+        self.draw_bar()
 
     def _loadLevel(self):
         """
@@ -91,4 +99,15 @@ class Interface():
         #
 
 
-
+    def draw_bar(self):
+        """
+        Draws the info bar on the bottom of the screen. 
+        """        
+        #draw the background of the bar
+        pygame.draw.rect(self._windowSurfaceObj, STATUS_BAR_COLOR, self.status_bar)
+        
+        #draw the outline of the bar
+        '''outlineRect = self.bar_rect.copy()
+        outlineRect.w -= 1
+        outlineRect.h -= 1
+        pygame.draw.rect(self.screen, OUTLINE_COLOR, outlineRect, 2)'''

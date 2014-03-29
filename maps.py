@@ -63,7 +63,7 @@ class Map():
         """
 
         #If the pixel hitted is a mountain:
-        if self._pixels[shot_position] == PIXEL_MOUNTAIN:
+        if shot_position in self._pixels and self._pixels[shot_position] == PIXEL_MOUNTAIN:
             radius = EXPLOSION_RADIUS * power
 
             # Run trhough a "kind of" cicrcle shape in order to
@@ -74,7 +74,7 @@ class Map():
                     # Check if its close to the radio
                     if abs(x-shot_position[0])+abs(y-shot_position[1]) < 1.3*radius:
                         # Check if this is a mountain pixel
-                        if self._pixels[(x,y)] == PIXEL_MOUNTAIN:
+                        if  (x,y) in self._pixels and self._pixels[(x,y)] == PIXEL_MOUNTAIN:
                             self._pixels[(x,y)] = PIXEL_SKY
                             windowSurfaceObj.set_at((x,y), self._bg_color)
             return True
