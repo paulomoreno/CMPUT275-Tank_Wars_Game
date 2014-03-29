@@ -1,24 +1,94 @@
 import pygame, sys
+from maps import Map
+
+# The status bar (bottom bar) height
+STATUS_BAR_HEIGHT = 120
 
 class Interface():
-	"""
-	"""
-	def __init__(self, level, bg_color, windowSurfaceObj, pygame):
+    """
+    """
+    def __init__(self, level, bg_color, pygame):
+        """
+        Initialize the game's interface
+        """
+        # Setup variables
+        self._level = level
+        self._pygame = pygame
+        self._bg_color = bg_color
 
-		self._level = level
-		self._pygame = pygame
-		self._bg_color = bg_color
-		self._loadLevel()
+        # Load the level information
+        # This method also initialize the screen size
+        #   according to the map size
+        self._loadLevel()
 
-		self._windowSurfaceObj = windowSurfaceObj
-		self._windowSurfaceObj.fill(bg_color)
+        #THIS IS ONLY FOR TEST PURPOSES
+        self.cont = 0
 
-	def _loadLevel(self):
+        #Load the map information
+        self._map = Map(level, bg_color)
 
-		#self._resolution = (1280,600)
-		pass
+        #Initialize the screen
+        self._windowSurfaceObj = pygame.display.set_mode(self._screen_resolution)
+        self._windowSurfaceObj.fill(bg_color)
+
+        self._map.paintMountain(self._windowSurfaceObj)
+
+    def _loadLevel(self):
+        """
+        Load the level information
+        """
+        #gets the filename
+        filename = "maps/" + self._level + ".lvl"
+        
+        map_file = open(filename, 'r')
+        
+        # Move up to the line with the size of the map
+        line = map_file.readline()
+        while line.find("Size: ") < 0:
+            line = map_file.readline()
+            if line == "":
+                raise Exception ("Expected Map Size.")
+
+        # Get the size of the map
+        line = line.lstrip("Size: ")
+        line = line.strip()
+        size = line.split('x')
+        map_width, map_height = size
+        map_width = int(map_width)
+        map_height = int(map_height)
+
+        # Move up to the line with the tank area
+        line = map_file.readline()
+        while line.find("TankArea: ") < 0:
+            line = map_file.readline()
+            if line == "":
+                raise Exception ("Expected Tank Area.")
+
+        # Get the size of the map
+        line = line.lstrip("TankArea: ")
+        self._tank_area = line.strip()
+
+        self._map_resolution = (map_width, map_height)
+        self._screen_resolution = (map_width, map_height+STATUS_BAR_HEIGHT)
+
+    def update(self):
+        """
+        Update the interface. This method is called on every frame.
+        """
+        #Update the display
+        self._pygame.display.update()
+
+        # THIS IS ONLY FOR TEST PURPOSES
+        # Here Im testing the "destory mountain" thing.
+        # Im pretty sure this is not how we do it, because it's really slow
+        self.cont += 1
+        if self.cont > 50:
+            self._map.didShotHitMountain( (200+self.cont-40,200+self.cont-40), 1, self._windowSurfaceObj)
 
 
-	def update(self):
+        #TODO setup the interface
+        # put the bar on the bottom, put the tanks,
+        #
 
-		self._pygame.display.update()
+
+
