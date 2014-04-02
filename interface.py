@@ -5,6 +5,9 @@ from maps import Map
 STATUS_BAR_HEIGHT = 120
 STATUS_BAR_COLOR = (55,55,55)
 
+class Modes:
+    Moving, SelectingPower, GameOver = range(3)
+
 class Interface():
     """
     """
@@ -111,3 +114,12 @@ class Interface():
         outlineRect.w -= 1
         outlineRect.h -= 1
         pygame.draw.rect(self.screen, OUTLINE_COLOR, outlineRect, 2)'''
+
+
+	
+    def on_click(self, e):
+        """
+        This is called when a click event occurs.
+        e is the click event.
+        """
+       

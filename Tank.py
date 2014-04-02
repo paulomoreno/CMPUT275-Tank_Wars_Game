@@ -11,8 +11,6 @@ class Tank(Sprite):
 	#TODO LIST:
 	-still need function for barrel movement, which will call _update_image
 	and update self._angle
-
-	
 	"""
 
 	def __init__(self, position, team):
