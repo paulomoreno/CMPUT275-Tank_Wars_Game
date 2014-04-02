@@ -27,7 +27,7 @@ class Tank(Sprite):
 		self.image_barrel = None #Barrel Image
 		#REQUIRED PYGAME Items
 		self.image = None
-		self.rect = pygame.Rect(0,0,SIZE, SIZE)
+		self.rect = pygame.Rect(0,0,SIZE, SIZE) #define outer size
 		self._update_image()
 		if activate:
 			self.activate()
