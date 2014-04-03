@@ -1,9 +1,30 @@
 import pygame, sys
+from Tank import Tank
 from maps import Map
+from random import randrange
 
 # The status bar (bottom bar) height
 STATUS_BAR_HEIGHT = 120
-STATUS_BAR_COLOR = (55,55,55)
+
+#Other status bar information
+STATUS_BAR_COLOR = (155,155,155)
+OUTLINE_COLOR = (55,55,55)
+COLUMN_WIDTH = 425
+
+# Set the fonts
+pygame.font.init()
+FONT_SIZE = 15
+MEDIUM_FONT_SIZE = 28
+BIG_FONT_SIZE = 40
+FONT = pygame.font.SysFont("Arial", FONT_SIZE)
+MEDIUM_FONT = pygame.font.SysFont("Arial", MEDIUM_FONT_SIZE)
+BIG_FONT = pygame.font.SysFont("Arial", BIG_FONT_SIZE)
+BIG_FONT.set_bold(True)
+
+FONT_COLOR = (55,55,55)
+
+# padding for left and top side of the bar
+PAD = 6
 
 class Modes:
     Moving, SelectingPower, GameOver = range(3)
@@ -30,6 +51,15 @@ class Interface():
         self.status_bar = pygame.Rect(0, self._map_resolution[1],
                                      self._screen_resolution[0],
                                      STATUS_BAR_HEIGHT)
+
+        #Initialize tanks
+        self.p1_tank = Tank((70, 570), 1)
+        self.p2_tank = Tank((1110, 570), 2)
+
+        #Initilize turn number
+        self.turn = 1
+        #The first one to play is random (not always player 1)
+        self.players_turn = randrange(2)+1
 
         #THIS IS ONLY FOR TEST PURPOSES
         self.cont = 0
@@ -97,9 +127,12 @@ class Interface():
             self._map.didShotHitMountain( (200+self.cont-40,200+self.cont-40), 1, self._windowSurfaceObj)
 
 
-        #TODO setup the interface
-        # put the bar on the bottom, put the tanks,
-        #
+        # draw the bar
+        self.draw_bar()
+
+        # draw the tanks
+        self.draw_tank(self.p1_tank)
+        self.draw_tank(self.p2_tank)
 
 
     def draw_bar(self):
@@ -110,10 +143,69 @@ class Interface():
         pygame.draw.rect(self._windowSurfaceObj, STATUS_BAR_COLOR, self.status_bar)
         
         #draw the outline of the bar
-        '''outlineRect = self.bar_rect.copy()
+        outlineRect = self.status_bar.copy()
         outlineRect.w -= 1
         outlineRect.h -= 1
-        pygame.draw.rect(self.screen, OUTLINE_COLOR, outlineRect, 2)'''
+        pygame.draw.rect(self._windowSurfaceObj, OUTLINE_COLOR, outlineRect, 2)
+
+        #draw lines between players information
+        pygame.draw.line(
+            self._windowSurfaceObj,
+            OUTLINE_COLOR,
+            (COLUMN_WIDTH, self._map_resolution[1]),
+            (COLUMN_WIDTH, self._map_resolution[1]+STATUS_BAR_HEIGHT))
+
+        pygame.draw.line(
+            self._windowSurfaceObj,
+            OUTLINE_COLOR,
+            (2*COLUMN_WIDTH, self._map_resolution[1]),
+            (2*COLUMN_WIDTH, self._map_resolution[1]+STATUS_BAR_HEIGHT))
+
+        #draw player 1's information
+        y = 0
+        y += 5 + self.draw_info_text('Player 1', MEDIUM_FONT, MEDIUM_FONT_SIZE, y, 0)
+        y += self.draw_info_text('HP:        {}%'.format(self.p1_tank.get_hp_as_percentage()), FONT, FONT_SIZE, y, 0)
+        y += self.draw_info_text('Angle:    {}°'.format(self.p1_tank.get_angle()), FONT, FONT_SIZE, y, 0)
+        y += self.draw_info_text('Power:  {}%'.format(self.p1_tank.get_power_as_percentage()), FONT, FONT_SIZE, y, 0)
+
+        #draw game information
+        y = 0
+        y += 5 + self.draw_info_text('Day {}'.format(self.turn), BIG_FONT, BIG_FONT_SIZE, y, 1)
+        y += self.draw_info_text('Player {}\'s turn'.format(self.players_turn), FONT, FONT_SIZE, y, 1)
+
+
+        #draw the button
+
+
+        #draw player 2's information
+        y = 0
+        y += 5 + self.draw_info_text('Player 2', MEDIUM_FONT, MEDIUM_FONT_SIZE, y, 2)
+        y += self.draw_info_text('HP:        {}%'.format(self.p2_tank.get_hp_as_percentage()), FONT, FONT_SIZE, y, 2)
+        y += self.draw_info_text('Angle:    {}°'.format(self.p2_tank.get_angle()), FONT, FONT_SIZE, y, 2)
+        y += self.draw_info_text('Power:  {}%'.format(self.p2_tank.get_power_as_percentage()), FONT, FONT_SIZE, y, 2)
+
+
+
+    def draw_info_text(self, text, font, font_size, y, column):
+        """
+        Draws given text with given information.
+        """
+        line_text = font.render(text, True, FONT_COLOR)
+        self._windowSurfaceObj.blit(
+            line_text,
+            (column*COLUMN_WIDTH + PAD, self._map_resolution[1] + y + PAD))
+        return font_size + PAD
+
+    def draw_tank(self, tank):
+        """
+        Draws given tank
+        """
+        pos = tank.get_position()
+        tank_rect = pygame.Rect(pos[0],pos[1],100, 30)
+        tank_barrel = pygame.Rect(pos[0]+50,pos[1]-10,50, 10)
+        tank_barrel = pygame.transform.rotate(tank_barrel, 45)
+        pygame.draw.rect(self._windowSurfaceObj, (30,150,30), tank_rect)
+        pygame.draw.rect(self._windowSurfaceObj, (30,100,30), tank_barrel)
 
 
 	
