@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, math
 from Tank import Tank
 from maps import Map
 from random import randrange
@@ -173,7 +173,7 @@ class Interface():
         y += 5 + self.draw_info_text('Day {}'.format(self.turn), BIG_FONT, BIG_FONT_SIZE, y, 1)
         y += self.draw_info_text('Player {}\'s turn'.format(self.players_turn), FONT, FONT_SIZE, y, 1)
 
-
+        #TODO
         #draw the button
 
 
@@ -203,19 +203,20 @@ class Interface():
         pos = tank.get_position()
         barrel_pos = tank.get_barrel_position()
 
-        #tank_rect = pygame.Rect(pos[0],pos[1],100, 30)
-        #tank_barrel = pygame.Rect(pos[0]+50,pos[1]-10,50, 10)
+        #Rotate the barrel image
+        barrel_img = pygame.transform.rotate(tank.image_barrel, tank.get_angle())
 
-        barrel_img = pygame.transform.rotate(tank.barrel_img, -45)
+        #Calculate the barrel's fixed position - because of the rotation
+        y = math.sin(math.radians(abs(tank.get_angle())))*44
+        if tank.team == 1:
+            x = 0
+        else: 
+            x = 56 - barrel_img.get_width()
 
-        self._windowSurfaceObj.blit(tank.tank_img, (pos[0],pos[1]))
-        self._windowSurfaceObj.blit(barrel_img, (barrel_pos[0],barrel_pos[1]))
-
+        #Draw the tank and the barrel
+        self._windowSurfaceObj.blit(tank.image, (pos[0],pos[1]))
+        self._windowSurfaceObj.blit(barrel_img, (barrel_pos[0] + x,barrel_pos[1]-y))
         pygame.display.flip()
-
-        #pygame.draw.rect(self._windowSurfaceObj, (30,150,30), tank_rect)
-        #pygame.draw.rect(self._windowSurfaceObj, (30,100,30), tank_barrel)
-
 
 	
     def on_click(self, e):

@@ -24,23 +24,21 @@ class Tank(Sprite):
         self.position = position
         self.team = team
         self.health = TANK_MAXHP
-        self._barrel_angle = 0 
+        self._barrel_angle = 45.0
         self._alive = True 
         self._barrel_power = TANK_MAXPWR
     
 
         if team == 1:
-            self.tank_img = pygame.image.load("tank/tank.png")
-            self.barrel_img = pygame.image.load("tank/tank_barrel.png")
-            self.barrel_position = (position[0]+56, position[1]+6)
+            self.image = pygame.image.load("tank/tank.png")
+            self.image_barrel = pygame.image.load("tank/tank_barrel.png")
         else:
-            self.tank_img = pygame.image.load("tank/tank_p2.png")
-            self.barrel_img = pygame.image.load("tank/tank_barrel_p2.png")
-            self.barrel_position = (position[0], position[1]+6)
+            self.image = pygame.image.load("tank/tank_p2.png")
+            self.image_barrel = pygame.image.load("tank/tank_barrel_p2.png")
 
-        self.image_barrel = None #Barrel Image
+        #self.image_barrel = None #Barrel Image
         #REQUIRED PYGAME Items
-        self.image = None
+        #self.image = None
         self.rect = pygame.Rect(position[0],position[1],TANK_WIDTH, TANK_HEIGHT) #define outer size
         self._update_image()
         
@@ -64,7 +62,10 @@ class Tank(Sprite):
         """
         Returns barrel angle
         """
-        return self._barrel_angle
+        if self.team == 1:
+            return self._barrel_angle
+        else:
+            return -self._barrel_angle
 
     def get_position(self):
         """
@@ -74,9 +75,13 @@ class Tank(Sprite):
 
     def get_barrel_position(self):
         """
-        Returns the tank position
+        Returns the tank's barrel position
+         - depending on the team, its a different position, because 
         """
-        return self.barrel_position
+        if self.team == 1:
+            return (self.position[0]+52, self.position[1]+6)
+        else:
+            return (self.position[0]-8, self.position[1]+6)
 
     @staticmethod
     def get_unit_at_pos(pos):
