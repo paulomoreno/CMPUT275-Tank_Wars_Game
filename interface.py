@@ -203,7 +203,6 @@ class Interface():
         pos = tank.get_position()
         tank_rect = pygame.Rect(pos[0],pos[1],100, 30)
         tank_barrel = pygame.Rect(pos[0]+50,pos[1]-10,50, 10)
-        tank_barrel = pygame.transform.rotate(tank_barrel, 45)
         pygame.draw.rect(self._windowSurfaceObj, (30,150,30), tank_rect)
         pygame.draw.rect(self._windowSurfaceObj, (30,100,30), tank_barrel)
 
