@@ -53,8 +53,8 @@ class Interface():
                                      STATUS_BAR_HEIGHT)
 
         #Initialize tanks
-        self.p1_tank = Tank((70, 570), 1)
-        self.p2_tank = Tank((1110, 570), 2)
+        self.p1_tank = Tank((70, 560), 1)
+        self.p2_tank = Tank((1110, 560), 2)
 
         #Initilize turn number
         self.turn = 1
@@ -201,10 +201,20 @@ class Interface():
         Draws given tank
         """
         pos = tank.get_position()
-        tank_rect = pygame.Rect(pos[0],pos[1],100, 30)
-        tank_barrel = pygame.Rect(pos[0]+50,pos[1]-10,50, 10)
-        pygame.draw.rect(self._windowSurfaceObj, (30,150,30), tank_rect)
-        pygame.draw.rect(self._windowSurfaceObj, (30,100,30), tank_barrel)
+        barrel_pos = tank.get_barrel_position()
+
+        #tank_rect = pygame.Rect(pos[0],pos[1],100, 30)
+        #tank_barrel = pygame.Rect(pos[0]+50,pos[1]-10,50, 10)
+
+        barrel_img = pygame.transform.rotate(tank.barrel_img, -45)
+
+        self._windowSurfaceObj.blit(tank.tank_img, (pos[0],pos[1]))
+        self._windowSurfaceObj.blit(barrel_img, (barrel_pos[0],barrel_pos[1]))
+
+        pygame.display.flip()
+
+        #pygame.draw.rect(self._windowSurfaceObj, (30,150,30), tank_rect)
+        #pygame.draw.rect(self._windowSurfaceObj, (30,100,30), tank_barrel)
 
 
 	

@@ -22,6 +22,8 @@ pygame.display.set_caption('Tank Wars')
 
 while True:
 
+
+
     for event in pygame.event.get():
         if event.type == QUIT:
                 pygame.quit()

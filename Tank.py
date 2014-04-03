@@ -4,8 +4,8 @@ from pygame.sprite import Sprite
 #Constant values
 TANK_MAXHP = 50
 TANK_MAXPWR = 100
-TANK_WIDTH = 50
-TANK_HEIGHT = 50 
+TANK_WIDTH = 100
+TANK_HEIGHT = 30 
 
 class Tank(Sprite):
     """
@@ -28,6 +28,16 @@ class Tank(Sprite):
         self._alive = True 
         self._barrel_power = TANK_MAXPWR
     
+
+        if team == 1:
+            self.tank_img = pygame.image.load("tank/tank.png")
+            self.barrel_img = pygame.image.load("tank/tank_barrel.png")
+            self.barrel_position = (position[0]+56, position[1]+6)
+        else:
+            self.tank_img = pygame.image.load("tank/tank_p2.png")
+            self.barrel_img = pygame.image.load("tank/tank_barrel_p2.png")
+            self.barrel_position = (position[0], position[1]+6)
+
         self.image_barrel = None #Barrel Image
         #REQUIRED PYGAME Items
         self.image = None
@@ -61,6 +71,12 @@ class Tank(Sprite):
         Returns the tank position
         """
         return self.position
+
+    def get_barrel_position(self):
+        """
+        Returns the tank position
+        """
+        return self.barrel_position
 
     @staticmethod
     def get_unit_at_pos(pos):
