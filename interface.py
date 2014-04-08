@@ -2,6 +2,7 @@ import pygame, sys, math
 from Tank import Tank
 from maps import Map
 from random import randrange
+from Shot import Shot
 
 # The status bar (bottom bar) height
 STATUS_BAR_HEIGHT = 120
@@ -315,3 +316,7 @@ class Interface():
             return
 
         self.mode = mode
+
+
+
+    
