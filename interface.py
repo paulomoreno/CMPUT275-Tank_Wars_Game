@@ -284,12 +284,18 @@ class Interface():
 
     def select_power(self):
         """
-        After hitting space to fire, fire shot and increment to next players turn
+        After hitting space to fire, we need to use a timer or somthing
+        between events to calculate how hard the shot should be.
+        This will eventually read from the arduino potentiometer value and pass that 
+        to the shot class. 
+        So maybe for now we will hard code it to be (0-100)
+
         """
         self.change_mode(Modes.Firing)
-        #calculate power of shot
+        show_power = 50
+            
 
-        self.fire_shot(1)
+        self.fire_shot(shot_power)
         
         
         
@@ -298,8 +304,12 @@ class Interface():
              enemy_tank = self.p2_tank
          else:
              enemy_tank = self.p1_tank
-             
-         enemy_tank.take_damage(power)
+
+         current_tank = self.cur_team
+
+         new_shot = Shot.Shot(50,current_tank.get_angle(), current_tank.get_position[0], current_tank.get_position[1])
+         if new_shot.check_hit():
+             enemy_tank.take_damage(power)
          
          self.change_mode(Modes.Move)
          self.next_turn()
