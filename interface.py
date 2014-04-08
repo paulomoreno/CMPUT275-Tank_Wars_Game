@@ -225,7 +225,7 @@ class Interface():
          """
         Erases tank
         """
-         pygame.draw.rect(self._windowSurfaceObj, self._bg_color, (tank.position[0],tank.position[1]-30,103,70))
+         pygame.draw.rect(self._windowSurfaceObj, self._bg_color, (tank.position[0],tank.position[1]-45,103,85))
     
 
     @property
