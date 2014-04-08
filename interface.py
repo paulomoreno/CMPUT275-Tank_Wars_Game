@@ -292,14 +292,18 @@ class Interface():
 
         """
         self.change_mode(Modes.Firing)
-        show_power = 50
+        shot_power = 50
             
 
         self.fire_shot(shot_power)
         
-        
-        
+
     def fire_shot(self,power):
+        """
+        Creates a shot according toa power value given
+        Then creates the effects that follow a shot being fired
+        """
+        
          if (self.turn) % self.num_teams == 1:
              enemy_tank = self.p2_tank
          else:
@@ -307,18 +311,16 @@ class Interface():
 
          current_tank = self.cur_team
 
-         new_shot = Shot.Shot(50,current_tank.get_angle(), current_tank.get_position[0], current_tank.get_position[1])
+         new_shot = Shot(power, current_tank.get_angle(), current_tank.get_position()[0], current_tank.get_position()[1])
          if new_shot.check_hit():
-             enemy_tank.take_damage(power)
+             enemy_tank.take_damage(power/25)
          
          self.change_mode(Modes.Move)
          self.next_turn()
 
 
-
     def next_turn(self):
         self.turn +=1
-
 
 
     def change_mode(self, mode):
