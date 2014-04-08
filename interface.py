@@ -267,9 +267,16 @@ class Interface():
         Change the angle of the tank barrel according to if the up 
         or down arrow key was pressed
         """
-    
-        pass
+        current_tank = self.cur_team
+        self.erase_tank(current_tank)
 
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+            current_tank._barrel_angle += 1
+
+        else:
+            current_tank._barrel_angle -= 1
+            
+        self.draw_tank(current_tank)
 
     def fire_shot(self):
         """
