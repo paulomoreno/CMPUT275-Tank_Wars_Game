@@ -230,6 +230,8 @@ class Interface():
         """
         if (self.turn) % self.num_teams == 1:
             return self.p1_tank
+        else:
+            return self.p2_tank
        
 
     def move_event(self, event):
@@ -240,12 +242,15 @@ class Interface():
         # team = self.cur_team
         #current_tank = Tank.get_unit(team)
         current_tank = self.cur_team
+        print(current_tank)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
             current_tank.move_tank([-1,0])
 
         else:
             current_tank.move_tank([1,0])
 
+
+        self._loadLevel
         self.draw_tank(current_tank)
 	
 
@@ -263,7 +268,7 @@ class Interface():
         """
         After hitting space to fire, fire shot and increment to next players turn
         """
-        next_turn()
+        self.next_turn()
         
 
 
