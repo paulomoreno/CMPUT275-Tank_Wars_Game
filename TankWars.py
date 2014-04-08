@@ -46,7 +46,7 @@ while True:
         #Fire Shot
         elif event.type == pygame.KEYDOWN and (event.key == pygame.K_SPACE):
             #print(event.type)
-            main_interface.fire_shot()
+            main_interface.select_power()
             
 
 

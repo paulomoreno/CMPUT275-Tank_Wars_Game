@@ -27,7 +27,7 @@ FONT_COLOR = (55,55,55)
 PAD = 6
 
 class Modes:
-    Move, SelectingPower, GameOver = range(3)
+    Move, Firing, GameOver = range(3)
 
 class Interface():
     """
@@ -41,6 +41,8 @@ class Interface():
         self._pygame = pygame
         self._bg_color = bg_color
 
+        #Start in player 1 move mode
+        self.mode = Modes.Move
 
         # Load the level information
         # This method also initialize the screen size
@@ -174,7 +176,7 @@ class Interface():
         #draw game information
         y = 0
         y += 5 + self.draw_info_text('Day {}'.format(self.turn), BIG_FONT, BIG_FONT_SIZE, y, 1)
-        y += self.draw_info_text('Player {}\'s turn'.format(self.players_turn), FONT, FONT_SIZE, y, 1)
+        y += self.draw_info_text('Player {}\'s turn'.format(((self.turn) % self.num_teams)+1), FONT, FONT_SIZE, y, 1)
 
         #TODO
         #draw the button
@@ -244,13 +246,14 @@ class Interface():
         Move the tank according to if the left or right arrow was pressed
 
         """
+        if self.mode != Modes.Move:
+            return
+        
         # team = self.cur_team
         #current_tank = Tank.get_unit(team)
         current_tank = self.cur_team
 
         self.erase_tank(current_tank)
-
-      
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
             current_tank.move_tank([-1,0])
@@ -271,21 +274,44 @@ class Interface():
         self.erase_tank(current_tank)
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-            current_tank._barrel_angle += 1
+            current_tank.change_barrel_angle(1)
 
         else:
-            current_tank._barrel_angle -= 1
+            current_tank.change_barrel_angle(-1)
             
         self.draw_tank(current_tank)
 
-    def fire_shot(self):
+    def select_power(self):
         """
         After hitting space to fire, fire shot and increment to next players turn
         """
-        self.next_turn()
+        self.change_mode(Modes.Firing)
+        #calculate power of shot
+
+        self.fire_shot(1)
         
+        
+        
+    def fire_shot(self,power):
+         if (self.turn) % self.num_teams == 1:
+             enemy_tank = self.p2_tank
+         else:
+             enemy_tank = self.p1_tank
+             
+         enemy_tank.take_damage(power)
+         
+         self.change_mode(Modes.Move)
+         self.next_turn()
+
 
 
     def next_turn(self):
         self.turn +=1
 
+
+
+    def change_mode(self, mode):
+        if self.mode == mode:
+            return
+
+        self.mode = mode

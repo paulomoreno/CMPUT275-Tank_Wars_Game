@@ -6,6 +6,9 @@ TANK_MAXHP = 50
 TANK_MAXPWR = 100
 TANK_WIDTH = 100
 TANK_HEIGHT = 30 
+MAX_ANGLE = 90
+MIN_ANGLE = 0
+
 
 active_units = pygame.sprite.LayeredUpdates()
 
@@ -111,6 +114,9 @@ class Tank(Sprite):
         self.position[0] += distance[0]
         self.position[1] += distance[1]
 
+    def change_barrel_angle(self, value):
+        if self._barrel_angle + value >= MIN_ANGLE and self._barrel_angle + value <= MAX_ANGLE:
+            self._barrel_angle += value
 
 
     def is_hit(self, location):
