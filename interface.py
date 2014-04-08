@@ -2,7 +2,7 @@ import pygame, sys, math
 from Tank import Tank
 from maps import Map
 from random import randrange
-from Shot import Shot
+#from Shot import Shot
 
 # The status bar (bottom bar) height
 STATUS_BAR_HEIGHT = 120
@@ -79,6 +79,8 @@ class Interface():
 
         self._map.paintMountain(self._windowSurfaceObj)
         self.draw_bar()
+        self.draw_tank(self.p1_tank)
+        self.draw_tank(self.p2_tank)
 
     def _loadLevel(self):
         """
@@ -136,11 +138,6 @@ class Interface():
         # draw the bar
         self.draw_bar()
 
-        # draw the tanks
-        self.draw_tank(self.p1_tank)
-        self.draw_tank(self.p2_tank)
-
-
     def draw_bar(self):
         """
         Draws the info bar on the bottom of the screen. 
@@ -177,7 +174,7 @@ class Interface():
         #draw game information
         y = 0
         y += 5 + self.draw_info_text('Day {}'.format(self.turn), BIG_FONT, BIG_FONT_SIZE, y, 1)
-        y += self.draw_info_text('Player {}\'s turn'.format(((self.turn) % self.num_teams)+1), FONT, FONT_SIZE, y, 1)
+        y += self.draw_info_text('Player {}\'s turn'.format(self.players_turn), FONT, FONT_SIZE, y, 1)
 
         #TODO
         #draw the button
@@ -225,10 +222,10 @@ class Interface():
         pygame.display.flip()
     
     def erase_tank(self, tank):
-         """
+        """
         Erases tank
         """
-         pygame.draw.rect(self._windowSurfaceObj, self._bg_color, (tank.position[0],tank.position[1]-45,103,85))
+        pygame.draw.rect(self._windowSurfaceObj, self._bg_color, (tank.position[0],tank.position[1]-45,103,85))
     
 
     @property
@@ -236,7 +233,7 @@ class Interface():
         """
         Returns the string name of the tank who's turn it currently is. 
         """
-        if (self.turn) % self.num_teams == 1:
+        if self.players_turn == 1:
             return self.p1_tank
         else:
             return self.p2_tank
@@ -282,6 +279,52 @@ class Interface():
             
         self.draw_tank(current_tank)
 
+    def move_tank(self, value):
+        """
+        Move the tank according to if the left or right arrow was pressed
+
+        """
+        if self.mode != Modes.Move:
+            return
+        
+        #Get the current tank
+        current_tank = self.cur_team
+
+        #Erase it
+        self.erase_tank(current_tank)
+
+        #Move it accordingly
+        if value == "left":
+            current_tank.move_tank([-3,0])
+
+        else:
+            current_tank.move_tank([3,0])
+        
+        #Redraw it
+        self.draw_tank(current_tank)
+
+    def change_angle(self, value):
+        """
+        Change the angle of the tank barrel according to if the up 
+        or down arrow key was pressed
+        """
+        #Get the current tank
+        current_tank = self.cur_team
+
+        #Erase it
+        self.erase_tank(current_tank)
+
+        #Change the angle accordingly
+        if value == "up":
+            current_tank.change_barrel_angle(1)
+
+        else:
+            current_tank.change_barrel_angle(-1)
+            
+        #Redraw the tank
+        self.draw_tank(current_tank)
+
+
     def select_power(self):
         """
         After hitting space to fire, we need to use a timer or somthing
@@ -304,23 +347,30 @@ class Interface():
         Then creates the effects that follow a shot being fired
         """
         
-         if (self.turn) % self.num_teams == 1:
-             enemy_tank = self.p2_tank
-         else:
-             enemy_tank = self.p1_tank
+        if (self.turn) % self.num_teams == 1:
+            enemy_tank = self.p2_tank
+        else:
+            enemy_tank = self.p1_tank
 
-         current_tank = self.cur_team
+        current_tank = self.cur_team
 
-         new_shot = Shot(power, current_tank.get_angle(), current_tank.get_position()[0], current_tank.get_position()[1])
-         if new_shot.check_hit():
-             enemy_tank.take_damage(power/25)
+        new_shot = Shot(power, current_tank.get_angle(), current_tank.get_position()[0], current_tank.get_position()[1])
+        if new_shot.check_hit():
+            enemy_tank.take_damage(power/25)
          
-         self.change_mode(Modes.Move)
-         self.next_turn()
+        self.change_mode(Modes.Move)
+        self.next_turn()
 
 
     def next_turn(self):
         self.turn +=1
+
+        #Updates the the player's turn variable
+        # Which is, whoever turn is it
+        if self.players_turn == 1:
+            self.players_turn = 2
+        else:
+            self.players_turn = 1
 
 
     def change_mode(self, mode):

@@ -33,21 +33,38 @@ while True:
             sys.exit()
 
         #Movement left or right
-        elif (event.type == pygame.KEYDOWN and
-              (event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT)):
+        #elif (event.type == pygame.KEYDOWN and
+        #      (event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT)):
             #print(event.key)
-            main_interface.move_event(event)
+        #    main_interface.move_event(event)
 
         #Shot angle change 
-        elif event.type == pygame.KEYDOWN and (event.key == pygame.K_UP or event.key == pygame.K_DOWN):
+        #elif event.type == pygame.KEYDOWN and (event.key == pygame.K_UP or event.key == pygame.K_DOWN):
             #print(event.type)
-            main_interface.shot_angle_change_event(event)
-
+        #    main_interface.shot_angle_change_event(event)
+        
         #Fire Shot
         elif event.type == pygame.KEYDOWN and (event.key == pygame.K_SPACE):
             #print(event.type)
             main_interface.select_power()
-            
+        
+        #if keys[K_UP]:
+        #    player.pos.top -= 10
+        #if keys[K_DOWN]:
+        #    player.pos.left += 10
+        #if keys[K_SPACE]: 
+        #    print 'firing gun'
+
+    # get key current state
+    keys = pygame.key.get_pressed()
+    if keys[K_LEFT]:
+        main_interface.move_tank("left")
+    if keys[K_RIGHT]:
+        main_interface.move_tank("right")
+    if keys[K_UP]:
+        main_interface.change_angle("up")
+    if keys[K_DOWN]:
+        main_interface.change_angle("down")
 
 
 
