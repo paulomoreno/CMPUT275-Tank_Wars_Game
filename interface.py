@@ -220,7 +220,12 @@ class Interface():
         self._windowSurfaceObj.blit(tank.image, (pos[0],pos[1]))
         self._windowSurfaceObj.blit(barrel_img, (barrel_pos[0] + x,barrel_pos[1]-y))
         pygame.display.flip()
-
+    
+    def erase_tank(self, tank):
+         """
+        Erases tank
+        """
+         pygame.draw.rect(self._windowSurfaceObj, self._bg_color, (tank.position[0],tank.position[1]-30,103,70))
     
 
     @property
@@ -242,15 +247,17 @@ class Interface():
         # team = self.cur_team
         #current_tank = Tank.get_unit(team)
         current_tank = self.cur_team
-        print(current_tank)
+
+        self.erase_tank(current_tank)
+
+      
+
         if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
             current_tank.move_tank([-1,0])
 
         else:
             current_tank.move_tank([1,0])
-
-
-        self._loadLevel
+        
         self.draw_tank(current_tank)
 	
 
