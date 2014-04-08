@@ -22,12 +22,34 @@ pygame.display.set_caption('Tank Wars')
 
 while True:
 
-
-
     for event in pygame.event.get():
         if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+            pygame.quit()
+            sys.exit()
+
+        elif (event.type == pygame.KEYDOWN and
+              (event.key == pygame.K_q or event.key == pygame.K_ESCAPE)):
+            pygame.display.quit()
+            sys.exit()
+
+        #Movement left or right
+        elif (event.type == pygame.KEYDOWN and
+              (event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT)):
+            #print(event.key)
+            main_interface.move_event(event)
+
+        #Shot angle change 
+        elif event.type == pygame.KEYDOWN and (event.key == pygame.K_UP or event.key == pygame.K_DOWN):
+            #print(event.type)
+            main_interface.shot_angle_change_event(event)
+
+        #Fire Shot
+        elif event.type == pygame.KEYDOWN and (event.key == pygame.K_SPACE):
+            #print(event.type)
+            main_interface.fire_shot()
+            
+
+
 
     main_interface.update()
     fpsClock.tick(60)

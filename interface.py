@@ -27,7 +27,7 @@ FONT_COLOR = (55,55,55)
 PAD = 6
 
 class Modes:
-    Moving, SelectingPower, GameOver = range(3)
+    Move, SelectingPower, GameOver = range(3)
 
 class Interface():
     """
@@ -53,13 +53,16 @@ class Interface():
                                      STATUS_BAR_HEIGHT)
 
         #Initialize tanks
-        self.p1_tank = Tank((70, 560), 1)
-        self.p2_tank = Tank((1110, 560), 2)
+        self.p1_tank = Tank([70, 560], 1)
+        self.p2_tank = Tank([1110, 560], 2)
 
         #Initilize turn number
         self.turn = 1
         #The first one to play is random (not always player 1)
         self.players_turn = randrange(2)+1
+
+        #Set the number of turns
+        self.num_teams = 2
 
         #THIS IS ONLY FOR TEST PURPOSES
         self.cont = 0
@@ -218,10 +221,52 @@ class Interface():
         self._windowSurfaceObj.blit(barrel_img, (barrel_pos[0] + x,barrel_pos[1]-y))
         pygame.display.flip()
 
-	
-    def on_click(self, e):
+    
+
+    @property
+    def cur_team(self):
         """
-        This is called when a click event occurs.
-        e is the click event.
+        Returns the string name of the tank who's turn it currently is. 
         """
+        if (self.turn) % self.num_teams == 1:
+            return self.p1_tank
        
+
+    def move_event(self, event):
+        """
+        Move the tank according to if the left or right arrow was pressed
+
+        """
+        # team = self.cur_team
+        #current_tank = Tank.get_unit(team)
+        current_tank = self.cur_team
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+            current_tank.move_tank([-1,0])
+
+        else:
+            current_tank.move_tank([1,0])
+
+        self.draw_tank(current_tank)
+	
+
+
+    def shot_angle_change_event(self, event):
+        """
+        Change the angle of the tank barrel according to if the up 
+        or down arrow key was pressed
+        """
+    
+        pass
+
+
+    def fire_shot(self):
+        """
+        After hitting space to fire, fire shot and increment to next players turn
+        """
+        next_turn()
+        
+
+
+    def next_turn(self):
+        self.turn +=1
+

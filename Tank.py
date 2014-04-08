@@ -7,6 +7,8 @@ TANK_MAXPWR = 100
 TANK_WIDTH = 100
 TANK_HEIGHT = 30 
 
+active_units = pygame.sprite.LayeredUpdates()
+
 class Tank(Sprite):
     """
     This class defines a tank unit
@@ -84,13 +86,13 @@ class Tank(Sprite):
             return (self.position[0]-8, self.position[1]+6)
 
     @staticmethod
-    def get_unit_at_pos(pos):
+    def get_unit(cur_team):
         """
         Return the unit at given position with help of 
         sprite class
         """
-        for u in BaseUnit.active_units:
-            if(u.position[0], u.position[1]) == pos:
+        for u in Tank.active_units:
+            if(u.team) == cur_team:
                 return u
         return None
     
