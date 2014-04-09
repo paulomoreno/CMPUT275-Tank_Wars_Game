@@ -1,8 +1,9 @@
+import math
 
 class Shot():
 
     def __init__(self, power, angle, my_tank, enemy_tank, map_height, map_width):
-        self.power = power/10
+        self.power = power/5
         self.angle = angle
 
         self.my_tank = my_tank
@@ -22,21 +23,21 @@ class Shot():
 
         gravity = 0.3
 
-        x = self.my_tank.get_position[0]
-        y = self.my_tank.get_position[1]
+        x = self.my_tank.get_shot_start_position()[0]
+        y = self.my_tank.get_shot_start_position()[1]
 
         #Append initial position of the shot
         self.path.append((x,y))
 
         #If the attacking tank is on the left side, the shot will go to the right
-        if my_tank.get_team == 1:
+        if self.my_tank.get_team() == 1:
 
             #Calculate the initial horizontal (x) and vertical (y) velocity of the shot
             xvel = math.cos(math.radians(abs(self.angle))) * self.power
             yvel = math.sin(math.radians(abs(self.angle))) * -self.power
 
             #While the shot is above the ground, and didnt reach the vertical limit of the screen
-            while x < self.map_width or y > self.map_height:
+            while x < self.map_width and y < self.map_height:
 
                 x += xvel
                 y += yvel
@@ -49,14 +50,16 @@ class Shot():
         #the shot travel to the left
         else:
 
+
+
             #Calculate the initial horizontal (x) and vertical (y) velocity of the shot
             xvel = math.cos(math.radians(abs(self.angle))) * -self.power
             yvel = math.sin(math.radians(abs(self.angle))) * -self.power
 
             #While the shot is above the ground, and didnt reach the vertical limit of the screen
-            while x > self.map_width or y > self.map_height:
+            while x > 0 and y < self.map_height:
 
-                x -= xvel
+                x += xvel
                 y += yvel
 
                 yvel += gravity
@@ -77,7 +80,7 @@ class Shot():
         tank_rect = self.enemy_tank.get_rect()
 
         for point in self.path:
-            if tank_rect.collidepoint():
+            if tank_rect.collidepoint(point):
                 return True
 
         return False

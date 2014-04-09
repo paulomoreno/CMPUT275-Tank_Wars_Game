@@ -1,12 +1,12 @@
-import pygame
+import pygame, math
 
 
-MOUNTAIN_COLOR = (50,255,50)
+MOUNTAIN_COLOR = (50,255,50,255)
 
 PIXEL_SKY = 0
 PIXEL_MOUNTAIN = 1
 
-EXPLOSION_RADIUS = 0.25
+EXPLOSION_RADIUS = 0.5
 
 class Map():
     """
@@ -23,6 +23,8 @@ class Map():
 
         # Load the .gif map file
         self._loadMap()
+
+        self.square_root_2 = math.sqrt(2)
 
     def _loadMap(self):
         """
@@ -55,29 +57,29 @@ class Map():
             if self._pixels[pos] == PIXEL_MOUNTAIN:
                 windowSurfaceObj.set_at(pos, MOUNTAIN_COLOR)
 
-    def didShotHitMountain(self, shot_position, power, windowSurfaceObj):
+    def didShotHitMountain(self, circle_rect, power, windowSurfaceObj):
         """
         Check if a given shot hitted the mountain. 
             If it did, return True and destroy the mountain according to
             a explosion radius
         """
 
-        #If the pixel hitted is a mountain:
-        if shot_position in self._pixels and self._pixels[shot_position] == PIXEL_MOUNTAIN:
-            radius = round(EXPLOSION_RADIUS * power)
+        new_rect_side = circle_rect.w
+        offset = round((circle_rect.w - new_rect_side)/2)
 
-            # Run trhough a "kind of" cicrcle shape in order to
-            # remove these pixels as mountain and set them as
-            # sky pixels.
-            for x in range(shot_position[0]-radius,shot_position[0]+radius):
-                for y in range(shot_position[1]-radius,shot_position[1]+radius):
-                    # Check if its close to the radio
-                    if abs(x-shot_position[0])+abs(y-shot_position[1]) < 1.3*radius:
-                        # Check if this is a mountain pixel
-                        if  (x,y) in self._pixels and self._pixels[(x,y)] == PIXEL_MOUNTAIN:
-                            self._pixels[(x,y)] = PIXEL_SKY
-                            windowSurfaceObj.set_at((x,y), self._bg_color)
-            return True
-        else:
-            return False
+        circle_rect.w = new_rect_side
+        circle_rect.h = new_rect_side
+
+        circle_rect = circle_rect.move(-offset, -offset)
+
+        collide = False
+
+        for x in range(circle_rect.x, (circle_rect.x + circle_rect.w)):
+            for y in range(circle_rect.y, (circle_rect.y + circle_rect.h)):
+                if windowSurfaceObj.get_at((x,y)) == MOUNTAIN_COLOR:
+                    collide = True
+                    radius = round(EXPLOSION_RADIUS * power)
+                    pygame.draw.circle(windowSurfaceObj, self._bg_color, (x,y), radius)
+
+        return collide
 

@@ -37,9 +37,11 @@ class Tank(Sprite):
         if team == 1:
             self.image = pygame.image.load("tank/tank.png")
             self.image_barrel = pygame.image.load("tank/tank_barrel.png")
+            self.shot_initial_pos = [self.position[0]+96, self.position[1]+6]
         else:
             self.image = pygame.image.load("tank/tank_p2.png")
             self.image_barrel = pygame.image.load("tank/tank_barrel_p2.png")
+            self.shot_initial_pos = [self.position[0]+36, self.position[1]+6]
 
         #self.image_barrel = None #Barrel Image
         #REQUIRED PYGAME Items
@@ -56,6 +58,19 @@ class Tank(Sprite):
         Returns the hp as percentage
         """
         return (self.health / TANK_MAXHP) * 100
+
+    def set_shot_start_position(self, x, y):
+        """
+        Updates the initial shot position (this is called when we rotate the barrel)
+        """
+        self.shot_initial_pos[0] = round(x)
+        self.shot_initial_pos[1] = round(y)
+
+    def get_shot_start_position(self):
+        """
+        Returns the initial position for the shot
+        """
+        return self.shot_initial_pos
 
     def get_power_as_percentage(self):
         """
@@ -87,17 +102,6 @@ class Tank(Sprite):
             return (self.position[0]+52, self.position[1]+6)
         else:
             return (self.position[0]-8, self.position[1]+6)
-
-    @staticmethod
-    def get_unit(cur_team):
-        """
-        Return the unit at given position with help of 
-        sprite class
-        """
-        for u in Tank.active_units:
-            if(u.team) == cur_team:
-                return u
-        return None
     
     def get_team(self):
         """
@@ -110,6 +114,17 @@ class Tank(Sprite):
         Returns a rectangle that contains the tank
         """
         return self.rect
+
+    @staticmethod
+    def get_unit(cur_team):
+        """
+        Return the unit at given position with help of 
+        sprite class
+        """
+        for u in Tank.active_units:
+            if(u.team) == cur_team:
+                return u
+        return None
 
     @property
     def active(self):

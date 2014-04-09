@@ -149,11 +149,10 @@ class Interface():
         #Check if we are supposed to draw the shot
         if self.mode == Modes.Draw_Shot:
 
-            if self.shot_path_index < len(shot_path):
+            if self.shot_path_index < len(self.shot_path):
                 
-
                 #Erase old bullet
-                if elf.shot_path_index > 0:
+                if self.shot_path_index > 0:
                     pos = self.shot_path[self.shot_path_index-1]
                     x = pos[0]
                     y = pos[1]
@@ -166,9 +165,10 @@ class Interface():
 
                 #Check for bounds
                 if x >= 0 and y >= 0 and x < self._map_resolution[0] and   y < self._map_resolution[1]:
-                    self.draw_shot(x,y)
+                    circle_rect = self.draw_shot(x,y)
                     #Check we did hit the mountain
-                    if self._map.didShotHitMountain((x,y), self.current_power, self._windowSurfaceObj):
+                    if self._map.didShotHitMountain(circle_rect, self.current_power, self._windowSurfaceObj):
+                        self.erase_shot(x,y)
                         self.finish_shot_firing(True)
 
 
@@ -176,7 +176,7 @@ class Interface():
                 self.shot_path_index += 1
 
             #If this is the last time, erase the shot
-            elif self.shot_path_index == len(shot_path) and self.shot_path_index > 0:
+            elif self.shot_path_index == len(self.shot_path) and self.shot_path_index > 0:
                 pos = self.shot_path[self.shot_path_index-1]
                 x = pos[0]
                 y = pos[1]
@@ -266,10 +266,14 @@ class Interface():
 
         #Calculate the barrel's fixed position - because of the rotation
         y = math.sin(math.radians(abs(tank.get_angle())))*44
+
+        #Defines the x according to the tank and update the initial shot position
         if tank.team == 1:
             x = 0
+            tank.set_shot_start_position(barrel_pos[0] + barrel_img.get_width(), barrel_pos[1]-y)
         else: 
             x = 56 - barrel_img.get_width()
+            tank.set_shot_start_position(barrel_pos[0] + x, barrel_pos[1]-y)
 
         #Draw the tank and the barrel
         self._windowSurfaceObj.blit(tank.image, (pos[0],pos[1]))
@@ -280,7 +284,7 @@ class Interface():
         """
         Draw a shot on given positon
         """
-        pygame.draw.circle(self._windowSurfaceObj, SHOT_COLOR, (x,y), SHOT_RADIUS)
+        return pygame.draw.circle(self._windowSurfaceObj, SHOT_COLOR, (x,y), SHOT_RADIUS)
 
     def erase_shot(self, x,y):
         """
@@ -412,6 +416,9 @@ class Interface():
         Change the angle of the tank barrel according to if the up 
         or down arrow key was pressed
         """
+        if self.mode != Modes.Move:
+            return
+
         #Get the current tank
         current_tank = self.cur_team
 
@@ -438,6 +445,9 @@ class Interface():
         So maybe for now we will hard code it to be (0-100)
 
         """
+        if self.mode != Modes.Move:
+            return
+
         self.change_mode(Modes.Firing)
         
         #self.draw_power_bar()
@@ -445,6 +455,9 @@ class Interface():
 
 
     def release_power(self):
+        if self.mode != Modes.Firing:
+            return
+
         self.fire_shot()
         self.current_power = 20
         self.current_power_increasing = True
@@ -466,7 +479,7 @@ class Interface():
         current_tank = self.cur_team
 
         self.current_shot = Shot(self.current_power, current_tank.get_angle(), current_tank, enemy_tank, self._map_resolution[1], self._map_resolution[0])
-        self.shot_path = new_shot.get_path()
+        self.shot_path = self.current_shot.get_path()
         self.shot_path_index = 0 
          
 
@@ -474,9 +487,14 @@ class Interface():
         """
         This method is called after we finish drawing the shot and need to finish the player's turn
         """
+        if self.players_turn == 1:
+            enemy_tank = self.p2_tank
+        else:
+            enemy_tank = self.p1_tank
+
         #If we didn't hit the mountain and did hit the other tank, decrease his hp
         if not didHitMountain and self.current_shot.check_hit():
-            enemy_tank.take_damage(self.current_power/25)
+            enemy_tank.take_damage(self.current_power*0.8)
 
         self.change_mode(Modes.Move)
         self.next_turn()
