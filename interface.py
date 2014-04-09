@@ -1,4 +1,4 @@
-import pygame, sys, math
+import pygame, sys, math, time
 from Tank import Tank
 from maps import Map
 from random import randrange
@@ -106,9 +106,6 @@ class Interface():
         self.draw_tank(self.p1_tank)
         self.draw_tank(self.p2_tank)
 
-        self.square_root_2 = math.sqrt(2)
-
-
     def _loadLevel(self):
         """
         Load the level information
@@ -184,13 +181,13 @@ class Interface():
                     #  For example: if it hit the mountain or a tank
                     if self.shot_path_index > 2 and circle_rect.colliderect(self.p1_tank.get_rect()):
                         self.erase_shot(x,y)
-                        self.finish_shot_firing(False, 1)
+                        self.finish_shot_firing(False, did_hit_team=1)
                     elif self.shot_path_index > 2 and circle_rect.colliderect(self.p2_tank.get_rect()):
                         self.erase_shot(x,y)
-                        self.finish_shot_firing(False, 2)
+                        self.finish_shot_firing(False, did_hit_team=2)
                     elif self._map.didShotHitMountain(circle_rect, self.current_power, self._windowSurfaceObj):
                         self.erase_shot(x,y)
-                        self.finish_shot_firing(True)
+                        self.finish_shot_firing(True, pos=(x,y))
 
 
 
@@ -533,14 +530,13 @@ class Interface():
         #self.sound_controller.play("BombDrop");
          
 
-    def finish_shot_firing(self, didHitMountain, did_hit_team=0):
+    def finish_shot_firing(self, didHitMountain, did_hit_team=0, pos=None):
         """
         This method is called after we finish drawing the shot and need to finish the player's turn
         """
+
         enemy_tank = self.enemy_team
         current_tank = self.cur_team
-
-        self.sound_controller.play("Explosion");
 
 
         if self.players_turn == 1:
@@ -548,6 +544,15 @@ class Interface():
         else:
             enemy_team_number = 1
 
+        if pos:
+            self.explosion(pos[0], pos[1], 15)
+        elif did_hit_team != 0:
+            if did_hit_team == 1:
+                pos = [(self.p1_tank.get_rect().x + (self.p1_tank.get_rect().w/2)),(self.p1_tank.get_rect().y + (self.p1_tank.get_rect().h/2))]
+            elif did_hit_team == 2:
+                pos = [(self.p2_tank.get_rect().x + (self.p2_tank.get_rect().w/2)),(self.p2_tank.get_rect().y + (self.p2_tank.get_rect().h/2))]
+
+            self.explosion(pos[0], pos[1], 25)
             
 
         #If we didn't hit the mountain and did hit the other tank, decrease his hp
@@ -575,8 +580,6 @@ class Interface():
                 self.erase_tank(current_tank)
                 return
 
-
-
         self.change_mode(Modes.Move)
         self.next_turn()
 
@@ -597,6 +600,22 @@ class Interface():
             return
 
         self.mode = mode
+
+    def explosion(self, x, y, radius):
+        """
+        Creates an explosion animation centered at x,y with a radius
+        """
+        self.sound_controller.play("Explosion")
+
+        for i in range(1,10):
+            pygame.draw.circle(self._windowSurfaceObj, ( round(100+(i*10)),round(100-(i*10)),0) , (round(x),round(y)), round((radius/10)*i))
+            self._pygame.display.update()
+
+        for i in range(10,1):
+            pygame.draw.circle(self._windowSurfaceObj, ( round(100+(i*10)),round(100-(i*10)),0) , (round(x),round(y)), round((radius/10)*i))
+            self._pygame.display.update()
+        
+        pygame.draw.circle(self._windowSurfaceObj, self._bg_color, (round(x),round(y)), round(radius))
 
 
 

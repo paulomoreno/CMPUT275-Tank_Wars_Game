@@ -38,10 +38,12 @@ class Tank(Sprite):
             self.image = pygame.image.load("tank/tank.png")
             self.image_barrel = pygame.image.load("tank/tank_barrel.png")
             self.shot_initial_pos = [self.position[0]+96, self.position[1]+6]
+            self.bounds = (0, 240)
         else:
             self.image = pygame.image.load("tank/tank_p2.png")
             self.image_barrel = pygame.image.load("tank/tank_barrel_p2.png")
             self.shot_initial_pos = [self.position[0]+36, self.position[1]+6]
+            self.bounds = (1040, 1280)
 
         #self.image_barrel = None #Barrel Image
         #REQUIRED PYGAME Items
@@ -138,9 +140,11 @@ class Tank(Sprite):
         This method moves the tank to a new position,
         takes a distance change list [delta x, delta y] 
         """
-        self.position[0] += distance[0]
-        self.position[1] += distance[1]
-        self.rect.move_ip(distance[0],distance[1])
+        #Check bounds for team 1
+        if (self.position[0] + distance[0]) > self.bounds[0] and (self.position[0] + distance[0] + TANK_WIDTH) < self.bounds[1]:
+            self.position[0] += distance[0]
+            self.position[1] += distance[1]
+            self.rect.move_ip(distance[0],distance[1])
 
     def change_barrel_angle(self, value):
         if self._barrel_angle + value >= MIN_ANGLE and self._barrel_angle + value <= MAX_ANGLE:

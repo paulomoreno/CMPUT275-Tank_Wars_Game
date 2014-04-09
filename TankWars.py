@@ -84,7 +84,7 @@ while True:
     """
     Infinite Game loop for playing with the arduino controller
     """
-    arduino_input = serial_connection.read().decode('ASCII'))
+    arduino_input = serial_connection.read().decode('ASCII')
 
     #Send various commands acccording to what was recieved from the arduino
     if(arduino_input=='R'):
