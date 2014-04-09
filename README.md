@@ -20,18 +20,71 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 Description
 ===========
 
-Our project is a Tank Wars game. The game will consist on an interface and game developed using Python and will run on a computer. The game will be controlled with arduino controllers. Each arduino controller will have a joystick, two buttons, and a potentiometer, 5 LEDS.
+Our project is a Tank Wars game. The game consists features two tanks wich move around a map and attempt to fire shots and destroy eachother. Players start on oppsing sides of the map and turns alternate between players. Each player on their turn has the opportunity to move their tank, adjust the angle of the barrel of the tank,and then fire a shot. After firing the turn changes to the other player. 
+Each player begins with 100% hp and each shot that hits a players tank will decrease its hp until it goes to zero percent, at this time the game will end and the other player wins. 
+The game can be played with an arduino controller or the keyboard. 
 
-The game will have three sections: player 1 area, scenario, and player 2 area. The game will run on turns, so one player can only play during his turn. Each player can walk around their area (using the arduino joystick) and setup the tank aim - such as angle of the barrel and the power of the shot. When the player is ready, he presses a button and shoots - If he hits the other player, the other player’s hp will be reduced according to the shot effectiveness . After the shot is performed the turn is over and it its the other player’s turn.
 
-Specific Details:
+Game Instructions
+=================
+To Start the game make sure the requirements in the next section are satisfied. To begin the game run: 
 
-- 2D game (think “worms” http://en.wikipedia.org/wiki/Worms_(series) )
 
-	- “View” will be from the side, think cross section. 
+python3 TankWars.py
 
-	- Game will likely use pygame 
 
+*Please note the game has two modes, control with arduino over port: ACM0
+or control via the keyboard
+
+Keyboard Mode:
+ 
+- To play the game with the keyboard, use the arrow keys to move the tank left and right. 
+- Use the up/down arrows to adjust the angle of the tanks barrel and the subsequent shot. 
+- Hold down the spacebar to begin the power selection for the shot. 
+- You will notice a powerbar in the bottom center of the screen that will fluctuate back and forth. 
+- Release the spacebar when the image shows the desired power level. This will fire the shot, note that the more full the power bar the further the shot will fire. 
+
+
+
+Instructions for playing in Arduino Mode:
+
+- Controller setup: SEE WIRING DIAGRAM
+	- JOYSTICK DIGITAL PIN 4 & 
+	- VER = A1 (anaolog 1 )
+	- HOR = A0 (analog 0 
+	- PUSHBUTTON = DIGITAL PIN 3
+	
+- Connect the Arduino to ACMO
+- Run the command make upload in the client folder to upload client.cpp to arduino
+- Run the game client with python3 TankWars.py
+
+- Use the joystick to move the tank left / right and the barrel up /down
+- Click the joystick or use the button on digital 3 to begin power selectio for the shot
+- You will see the power bar at the bottom cycling back and forth, click the joystick again or use the button on digital pin3 to fire the shot at the desired power level according to power level displayed on the bower bar in the bottom center
+
+
+
+Requirements
+============
+
+- pygame
+
+	How to install pygame
+
+```bash
+#install dependencies
+sudo apt-get install mercurial python3-dev python3-numpy ffmpeg \
+    libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsmpeg-dev \
+    libsdl1.2-dev  libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev
+ 
+# Grab source
+hg clone https://bitbucket.org/pygame/pygame
+ 
+# Finally build and install
+cd pygame
+python3 setup.py build
+sudo python3 setup.py install
+```
 
 
 Milestones
@@ -56,27 +109,8 @@ Milestones
 	- implement the joystick up / down axis to control the angle of the fired projectile
 
 
-Requirements
-============
 
-- pygame
 
-	How to install pygame
-
-```bash
-#install dependencies
-sudo apt-get install mercurial python3-dev python3-numpy ffmpeg \
-    libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsmpeg-dev \
-    libsdl1.2-dev  libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev
- 
-# Grab source
-hg clone https://bitbucket.org/pygame/pygame
- 
-# Finally build and install
-cd pygame
-python3 setup.py build
-sudo python3 setup.py install
-```
 
 Sound Credits
 -------------
