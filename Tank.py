@@ -5,7 +5,7 @@ from pygame.sprite import Sprite
 TANK_MAXHP = 50
 TANK_MAXPWR = 100
 TANK_WIDTH = 100
-TANK_HEIGHT = 30 
+TANK_HEIGHT = 40 
 MAX_ANGLE = 90
 MIN_ANGLE = 0
 
@@ -99,6 +99,18 @@ class Tank(Sprite):
                 return u
         return None
     
+    def get_team(self):
+        """
+        What is my team
+        """
+        return self.team  
+
+    def get_rect(self):
+        """
+        Returns a rectangle that contains the tank
+        """
+        return self.rect
+
     @property
     def active(self):
         """
@@ -113,11 +125,22 @@ class Tank(Sprite):
         """
         self.position[0] += distance[0]
         self.position[1] += distance[1]
+        self.rect.move_ip(distance[0],distance[1])
 
     def change_barrel_angle(self, value):
         if self._barrel_angle + value >= MIN_ANGLE and self._barrel_angle + value <= MAX_ANGLE:
             self._barrel_angle += value
 
+    def update_power(self, power):
+        """
+        Updates the power
+        """
+        if power >= TANK_MAXPWR:
+            self._barrel_power = 100
+        elif power <= 0:
+            self._barrel_power = 0
+        else:
+            self._barrel_power = power
 
     def is_hit(self, location):
         """

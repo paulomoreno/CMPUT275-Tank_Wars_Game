@@ -47,6 +47,10 @@ while True:
         elif event.type == pygame.KEYDOWN and (event.key == pygame.K_SPACE):
             #print(event.type)
             main_interface.select_power()
+
+        elif event.type == pygame.KEYUP and (event.key == pygame.K_SPACE):
+            main_interface.release_power()
+
         
         #if keys[K_UP]:
         #    player.pos.top -= 10

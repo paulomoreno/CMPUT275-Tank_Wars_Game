@@ -2,7 +2,7 @@ import pygame, sys, math
 from Tank import Tank
 from maps import Map
 from random import randrange
-#from Shot import Shot
+from shot import Shot
 
 # The status bar (bottom bar) height
 STATUS_BAR_HEIGHT = 120
@@ -11,6 +11,12 @@ STATUS_BAR_HEIGHT = 120
 STATUS_BAR_COLOR = (155,155,155)
 OUTLINE_COLOR = (55,55,55)
 COLUMN_WIDTH = 425
+
+POWER_BAR_HEIGHT = 20
+POWER_BAR_COLOR = (150,150,0)
+
+SHOT_RADIUS = 5
+SHOT_COLOR = (20,20,20)
 
 # Set the fonts
 pygame.font.init()
@@ -28,7 +34,7 @@ FONT_COLOR = (55,55,55)
 PAD = 6
 
 class Modes:
-    Move, Firing, GameOver = range(3)
+    Move, Firing, Draw_Shot, GameOver = range(4)
 
 class Interface():
     """
@@ -55,6 +61,19 @@ class Interface():
                                      self._screen_resolution[0],
                                      STATUS_BAR_HEIGHT)
 
+        # The power bar
+        self.power_bar = pygame.Rect(COLUMN_WIDTH + (COLUMN_WIDTH - 100)/2 , self._map_resolution[1] + 80,
+                                     100,
+                                     POWER_BAR_HEIGHT)
+
+        self.power_outline = self.power_bar.copy()
+        self.power_outline.w -= 1
+        self.power_outline.h -= 1
+
+        # Current power
+        self.current_power = 20
+        self.current_power_increasing = True
+
         #Initialize tanks
         self.p1_tank = Tank([70, 560], 1)
         self.p2_tank = Tank([1110, 560], 2)
@@ -66,9 +85,6 @@ class Interface():
 
         #Set the number of turns
         self.num_teams = 2
-
-        #THIS IS ONLY FOR TEST PURPOSES
-        self.cont = 0
 
         #Load the map information
         self._map = Map(level, bg_color)
@@ -127,16 +143,49 @@ class Interface():
         #Update the display
         self._pygame.display.update()
 
-        # THIS IS ONLY FOR TEST PURPOSES
-        # Here Im testing the "destory mountain" thing.
-        # Im pretty sure this is not how we do it, because it's really slow
-        self.cont += 1
-        if self.cont > 50:
-            self._map.didShotHitMountain( (200+self.cont-40,200+self.cont-40), 1, self._windowSurfaceObj)
-
-
         # draw the bar
         self.draw_bar()
+
+        #Check if we are supposed to draw the shot
+        if self.mode == Modes.Draw_Shot:
+
+            if self.shot_path_index < len(shot_path):
+                
+
+                #Erase old bullet
+                if elf.shot_path_index > 0:
+                    pos = self.shot_path[self.shot_path_index-1]
+                    x = pos[0]
+                    y = pos[1]
+                    self.erase_shot(x,y)
+
+                #Draw current shot position
+                pos = self.shot_path[self.shot_path_index]
+                x = pos[0]
+                y = pos[1]
+
+                #Check for bounds
+                if x >= 0 and y >= 0 and x < self._map_resolution[0] and   y < self._map_resolution[1]:
+                    self.draw_shot(x,y)
+                    #Check we did hit the mountain
+                    if self._map.didShotHitMountain((x,y), self.current_power, self._windowSurfaceObj):
+                        self.finish_shot_firing(True)
+
+
+                #Increase the index
+                self.shot_path_index += 1
+
+            #If this is the last time, erase the shot
+            elif self.shot_path_index == len(shot_path) and self.shot_path_index > 0:
+                pos = self.shot_path[self.shot_path_index-1]
+                x = pos[0]
+                y = pos[1]
+                self.erase_shot(x,y)
+
+                self.finish_shot_firing(False)
+
+            
+
 
     def draw_bar(self):
         """
@@ -169,23 +218,29 @@ class Interface():
         y += 5 + self.draw_info_text('Player 1', MEDIUM_FONT, MEDIUM_FONT_SIZE, y, 0)
         y += self.draw_info_text('HP:        {}%'.format(self.p1_tank.get_hp_as_percentage()), FONT, FONT_SIZE, y, 0)
         y += self.draw_info_text('Angle:    {}°'.format(self.p1_tank.get_angle()), FONT, FONT_SIZE, y, 0)
-        y += self.draw_info_text('Power:  {}%'.format(self.p1_tank.get_power_as_percentage()), FONT, FONT_SIZE, y, 0)
+        self.draw_info_text('Power:  {:10.1f}%'.format(self.p1_tank.get_power_as_percentage()), FONT, FONT_SIZE, y, 0)
 
         #draw game information
         y = 0
         y += 5 + self.draw_info_text('Day {}'.format(self.turn), BIG_FONT, BIG_FONT_SIZE, y, 1)
         y += self.draw_info_text('Player {}\'s turn'.format(self.players_turn), FONT, FONT_SIZE, y, 1)
 
-        #TODO
-        #draw the button
+        #If we are firing, draw the power bar
+        if self.mode == Modes.Firing:
+            
+            self.calculate_power()
+            self.power_bar.w = self.current_power
+            
+            pygame.draw.rect(self._windowSurfaceObj, (POWER_BAR_COLOR[0]+self.current_power,POWER_BAR_COLOR[1]-self.current_power,POWER_BAR_COLOR[2]) , self.power_bar)
+            pygame.draw.rect(self._windowSurfaceObj, OUTLINE_COLOR, self.power_outline, 2)
 
 
         #draw player 2's information
         y = 0
         y += 5 + self.draw_info_text('Player 2', MEDIUM_FONT, MEDIUM_FONT_SIZE, y, 2)
         y += self.draw_info_text('HP:        {}%'.format(self.p2_tank.get_hp_as_percentage()), FONT, FONT_SIZE, y, 2)
-        y += self.draw_info_text('Angle:    {}°'.format(self.p2_tank.get_angle()), FONT, FONT_SIZE, y, 2)
-        y += self.draw_info_text('Power:  {}%'.format(self.p2_tank.get_power_as_percentage()), FONT, FONT_SIZE, y, 2)
+        y += self.draw_info_text('Angle:    {}°'.format(abs(self.p2_tank.get_angle())), FONT, FONT_SIZE, y, 2)
+        self.draw_info_text('Power:  {:10.1f}%'.format(self.p2_tank.get_power_as_percentage()), FONT, FONT_SIZE, y, 2)
 
 
 
@@ -220,12 +275,61 @@ class Interface():
         self._windowSurfaceObj.blit(tank.image, (pos[0],pos[1]))
         self._windowSurfaceObj.blit(barrel_img, (barrel_pos[0] + x,barrel_pos[1]-y))
         pygame.display.flip()
-    
+
+    def draw_shot(self, x,y):
+        """
+        Draw a shot on given positon
+        """
+        pygame.draw.circle(self._windowSurfaceObj, SHOT_COLOR, (x,y), SHOT_RADIUS)
+
+    def erase_shot(self, x,y):
+        """
+        Erase a shot on given position
+        """
+        pygame.draw.circle(self._windowSurfaceObj, self._bg_color, (x,y), SHOT_RADIUS)
+
+
+    def calculate_power(self):
+        """
+        Calculates the new power.
+
+        It should increase every frame until it reaches 100.
+        After, it decreases until 20 - and keeps going like this until
+        the user hits space again
+        """
+        if self.current_power > 80:
+            rate = 3.5
+        elif self.current_power > 60:
+            rate = 2.3
+        elif self.current_power > 40:
+            rate = 1.8
+        elif self.current_power > 20:
+            rate = 1.1
+        else:
+            rate = 0.5
+
+        if self.current_power_increasing:
+            self.current_power += rate
+
+            if self.current_power >= 100:
+                self.current_power = 100
+                self.current_power_increasing = False
+
+        else:
+            self.current_power -= rate
+
+            if self.current_power <= 0:
+                self.current_power = 0
+                self.current_power_increasing = True
+
+        self.cur_team.update_power(self.current_power)
+
     def erase_tank(self, tank):
         """
         Erases tank
         """
         pygame.draw.rect(self._windowSurfaceObj, self._bg_color, (tank.position[0],tank.position[1]-45,103,85))
+        #pygame.draw.rect(self._windowSurfaceObj, self._bg_color, tank.get_rect())
     
 
     @property
@@ -335,29 +439,45 @@ class Interface():
 
         """
         self.change_mode(Modes.Firing)
-        shot_power = 50
-            
-
-        self.fire_shot(shot_power)
         
+        #self.draw_power_bar()
+        #self.
 
-    def fire_shot(self,power):
+
+    def release_power(self):
+        self.fire_shot()
+        self.current_power = 20
+        self.current_power_increasing = True
+
+
+    def fire_shot(self):
         """
         Creates a shot according toa power value given
         Then creates the effects that follow a shot being fired
         """
         
-        if (self.turn) % self.num_teams == 1:
+        self.change_mode(Modes.Draw_Shot)
+
+        if self.players_turn == 1:
             enemy_tank = self.p2_tank
         else:
             enemy_tank = self.p1_tank
 
         current_tank = self.cur_team
 
-        new_shot = Shot(power, current_tank.get_angle(), current_tank.get_position()[0], current_tank.get_position()[1])
-        if new_shot.check_hit():
-            enemy_tank.take_damage(power/25)
+        self.current_shot = Shot(self.current_power, current_tank.get_angle(), current_tank, enemy_tank, self._map_resolution[1], self._map_resolution[0])
+        self.shot_path = new_shot.get_path()
+        self.shot_path_index = 0 
          
+
+    def finish_shot_firing(self, didHitMountain):
+        """
+        This method is called after we finish drawing the shot and need to finish the player's turn
+        """
+        #If we didn't hit the mountain and did hit the other tank, decrease his hp
+        if not didHitMountain and self.current_shot.check_hit():
+            enemy_tank.take_damage(self.current_power/25)
+
         self.change_mode(Modes.Move)
         self.next_turn()
 

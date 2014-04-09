@@ -6,7 +6,7 @@ MOUNTAIN_COLOR = (50,255,50)
 PIXEL_SKY = 0
 PIXEL_MOUNTAIN = 1
 
-EXPLOSION_RADIUS = 25
+EXPLOSION_RADIUS = 0.25
 
 class Map():
     """
@@ -64,7 +64,7 @@ class Map():
 
         #If the pixel hitted is a mountain:
         if shot_position in self._pixels and self._pixels[shot_position] == PIXEL_MOUNTAIN:
-            radius = EXPLOSION_RADIUS * power
+            radius = round(EXPLOSION_RADIUS * power)
 
             # Run trhough a "kind of" cicrcle shape in order to
             # remove these pixels as mountain and set them as
