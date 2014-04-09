@@ -244,8 +244,8 @@ class Interface():
         #draw player 1's information
         y = 0
         y += 5 + self.draw_info_text('Player 1', MEDIUM_FONT, MEDIUM_FONT_SIZE, y, 0)
-        y += self.draw_info_text('HP:        {}%'.format(self.p1_tank.get_hp_as_percentage()), FONT, FONT_SIZE, y, 0)
-        y += self.draw_info_text('Angle:    {}°'.format(self.p1_tank.get_angle()), FONT, FONT_SIZE, y, 0)
+        y += self.draw_info_text('HP:        {:10.1f}%'.format(self.p1_tank.get_hp_as_percentage()), FONT, FONT_SIZE, y, 0)
+        y += self.draw_info_text('Angle:    {:10.1f}°'.format(self.p1_tank.get_angle()), FONT, FONT_SIZE, y, 0)
         self.draw_info_text('Power:  {:10.1f}%'.format(self.p1_tank.get_power_as_percentage()), FONT, FONT_SIZE, y, 0)
 
         #draw game information
@@ -271,8 +271,8 @@ class Interface():
         #draw player 2's information
         y = 0
         y += 5 + self.draw_info_text('Player 2', MEDIUM_FONT, MEDIUM_FONT_SIZE, y, 2)
-        y += self.draw_info_text('HP:        {}%'.format(self.p2_tank.get_hp_as_percentage()), FONT, FONT_SIZE, y, 2)
-        y += self.draw_info_text('Angle:    {}°'.format(abs(self.p2_tank.get_angle())), FONT, FONT_SIZE, y, 2)
+        y += self.draw_info_text('HP:        {:10.1f}%'.format(self.p2_tank.get_hp_as_percentage()), FONT, FONT_SIZE, y, 2)
+        y += self.draw_info_text('Angle:    {:10.1f}°'.format(abs(self.p2_tank.get_angle())), FONT, FONT_SIZE, y, 2)
         self.draw_info_text('Power:  {:10.1f}%'.format(self.p2_tank.get_power_as_percentage()), FONT, FONT_SIZE, y, 2)
 
 
@@ -565,6 +565,8 @@ class Interface():
     def explosion(self, x, y, radius):
         """
         Creates an explosion animation centered at x,y with a radius
+            Note: the animation is poorly done, but it's better than nothing.
+                   and there's no time to improve it, unfortunatelly
         """
         self.sound_controller.play("Explosion")
 
@@ -578,6 +580,3 @@ class Interface():
         
         pygame.draw.circle(self._windowSurfaceObj, self._bg_color, (round(x),round(y)), round(radius))
 
-
-
-    
