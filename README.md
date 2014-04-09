@@ -29,9 +29,9 @@ Game Instructions
 =================
 To Start the game make sure the requirements in the next section are satisfied. To begin the game run: 
 
-'''bash
+
 python3 TankWars.py
-'''
+
 
 *Please note the game has two modes, control with arduino over port: ACM0
 or control via the keyboard
