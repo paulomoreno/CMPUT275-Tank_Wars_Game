@@ -394,45 +394,6 @@ class Interface():
         else:
             return self.p1_tank
 
-    def move_event(self, event):
-        """
-        Move the tank according to if the left or right arrow was pressed
-
-        """
-        if self.mode != Modes.Move:
-            return
-        
-        # team = self.cur_team
-        #current_tank = Tank.get_unit(team)
-        current_tank = self.cur_team
-
-        self.erase_tank(current_tank)
-
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-            current_tank.move_tank([-1,0])
-
-        else:
-            current_tank.move_tank([1,0])
-        
-        self.draw_tank(current_tank)
-	
-
-
-    def shot_angle_change_event(self, event):
-        """
-        Change the angle of the tank barrel according to if the up 
-        or down arrow key was pressed
-        """
-        current_tank = self.cur_team
-        self.erase_tank(current_tank)
-
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-            current_tank.change_barrel_angle(1)
-
-        else:
-            current_tank.change_barrel_angle(-1)
-            
-        self.draw_tank(current_tank)
 
     def move_tank(self, value):
         """
