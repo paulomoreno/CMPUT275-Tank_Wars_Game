@@ -28,6 +28,7 @@ The game can be played with an arduino controller or the keyboard.
 Game Instructions
 =================
 To Start the game make sure the requirements in the next section are satisfied. To begin the game run: 
+
 '''bash
 python3 TankWars.py
 '''
