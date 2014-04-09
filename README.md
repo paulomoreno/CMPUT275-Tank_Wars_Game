@@ -67,3 +67,15 @@ cd pygame
 python3 setup.py build
 sudo python3 setup.py install
 ```
+
+Sound Credits
+-------------
+All sounds are from FreeSound.org, released under public domain/Creative Commons
+licenses. As such, they are free to use in this project assuming credit is
+provided.
+
+**Tank fire**
+http://www.freesound.org/people/Cyberkineticfilms/sounds/127845/
+
+**Generic explosion**
+http://www.freesound.org/people/sarge4267/sounds/102734/
