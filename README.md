@@ -47,19 +47,19 @@ Keyboard Mode:
 
 Instructions for playing in Arduino Mode:
 
--Controller setup: SEE WIRING DIAGRAM
+- Controller setup: SEE WIRING DIAGRAM
 	- JOYSTICK DIGITAL PIN 4 & 
 	- VER = A1 (anaolog 1 )
 	- HOR = A0 (analog 0 
 	- PUSHBUTTON = DIGITAL PIN 3
 	
--Connect the Arduino to ACMO
--Run the command make upload in the client folder to upload client.cpp to arduino
--Run the game client with python3 TankWars.py
+- Connect the Arduino to ACMO
+- Run the command make upload in the client folder to upload client.cpp to arduino
+- Run the game client with python3 TankWars.py
 
--Use the joystick to move the tank left / right and the barrel up /down
--Click the joystick or use the button on digital 3 to begin power selectio for the shot
--You will see the power bar at the bottom cycling back and forth, click the joystick again or use the button on digital pin3 to fire the shot at the desired power level according to power level displayed on the bower bar in the bottom center
+- Use the joystick to move the tank left / right and the barrel up /down
+- Click the joystick or use the button on digital 3 to begin power selectio for the shot
+- You will see the power bar at the bottom cycling back and forth, click the joystick again or use the button on digital pin3 to fire the shot at the desired power level according to power level displayed on the bower bar in the bottom center
 
 
 
