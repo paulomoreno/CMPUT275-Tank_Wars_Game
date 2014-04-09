@@ -2,14 +2,16 @@
 #include <mem_syms.h>
 
 
-// Arduino analog input pin for the horizontal on the joystick.
+// Arduino analog input pin zero for the joystick.
 const uint8_t joy_pin_x = 0;
-// Arduino analog input pin for the vertical on the joystick.
+// Arduino analog input pin 1 for vertical on the joystick.
 const uint8_t joy_pin_y = 1;
 // Digital pin for the joystick button on the Arduino.
 const uint8_t joy_pin_button = 4;
 
+//Min value for joystick movement to be detected
 int OFFSET = 60; 
+//Default Joycstick positions
 int16_t joy_center_x = 512;
 int16_t joy_center_y = 512;
 int vertical, horizontal;
@@ -28,29 +30,28 @@ void setup() {
 }
 
 void loop(){
- 
+  //Setup joystick
   while(digitalRead(4)!=LOW){
-   
     vertical = analogRead(joy_pin_y);
     horizontal = analogRead(joy_pin_x);
-    //If joystick is behon offset in y postition write to the serial port
+    //If joystick is beyond offset in y postition write to the serial port
     if(horizontal > joy_center_x+OFFSET){
-      Serial.print("R");
+      Serial.print("R"); // Send R character for right movement
     }
     else if(horizontal < joy_center_x-OFFSET){
-      Serial.print("L");
+      Serial.print("L"); // Send L for left movement
     }
-       
     else if(vertical > joy_center_y+OFFSET){
-      Serial.print("D");
+      Serial.print("D"); // Send D for down movement
     }
     else if(vertical < joy_center_y-OFFSET){
-      Serial.print("U");
+      Serial.print("U"); // Send U for up movement
     }
-    delay(100);    
+    else Serial.print(' '); // If no commands to be sent send filler
+    delay(25); // Small delay
   }
-    
-    Serial.print("F");
-    delay(100);
+ 
+  Serial.print("F"); // If the joystick was clicked send f for fire
+  delay(250); // Longer delay to make sure no accidental double clicks
   
 }
