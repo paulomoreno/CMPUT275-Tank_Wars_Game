@@ -8,8 +8,8 @@ CONTRIBUTORS / LICENSING
 ========================
 
 Authors:
-Paulo Moreno
-Brandon Hayduk
+- Paulo Moreno
+- Brandon Hayduk
 
 Generally everything is LICENSE'D under Apache 2 by Paulo Moreno and Brandon Hayduk.
 
