@@ -131,7 +131,7 @@ class Tank(Sprite):
         """
         is the unit active?
         """
-        return self._active
+        return self._alive
 
     def move_tank(self, distance):
         """
@@ -175,8 +175,12 @@ class Tank(Sprite):
         """
         Removes HP from the tank
         """
-        
         self.health -= damage
+
+        if self.health <= 0:
+            self.health = 0
+            self.deactivate
+            self._alive = False
 
     def angel(self):
         return self._barrel_angle

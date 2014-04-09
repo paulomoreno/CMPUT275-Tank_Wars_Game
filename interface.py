@@ -3,7 +3,7 @@ from Tank import Tank
 from maps import Map
 from random import randrange
 from shot import Shot
-
+from sounds import SoundsController
 # The status bar (bottom bar) height
 STATUS_BAR_HEIGHT = 120
 
@@ -17,6 +17,8 @@ POWER_BAR_COLOR = (150,150,0)
 
 SHOT_RADIUS = 5
 SHOT_COLOR = (20,20,20)
+
+HIT_PERCENTAGE = 0.8
 
 # Set the fonts
 pygame.font.init()
@@ -56,6 +58,9 @@ class Interface():
         #   according to the map size
         self._loadLevel()
 
+        #Load all the sounds
+        self.sound_controller = SoundsController()
+
         # The status bar
         self.status_bar = pygame.Rect(0, self._map_resolution[1],
                                      self._screen_resolution[0],
@@ -69,6 +74,9 @@ class Interface():
         self.power_outline = self.power_bar.copy()
         self.power_outline.w -= 1
         self.power_outline.h -= 1
+
+        #Set friendly fire
+        self.friendly_fire = True
 
         # Current power
         self.current_power = 20
@@ -97,6 +105,9 @@ class Interface():
         self.draw_bar()
         self.draw_tank(self.p1_tank)
         self.draw_tank(self.p2_tank)
+
+        self.square_root_2 = math.sqrt(2)
+
 
     def _loadLevel(self):
         """
@@ -165,11 +176,22 @@ class Interface():
 
                 #Check for bounds
                 if x >= 0 and y >= 0 and x < self._map_resolution[0] and   y < self._map_resolution[1]:
+
+                    #Get the circle inside the rectangle
                     circle_rect = self.draw_shot(x,y)
-                    #Check we did hit the mountain
-                    if self._map.didShotHitMountain(circle_rect, self.current_power, self._windowSurfaceObj):
+
+                    #Check if the shot hit an obstacle
+                    #  For example: if it hit the mountain or a tank
+                    if self.shot_path_index > 2 and circle_rect.colliderect(self.p1_tank.get_rect()):
+                        self.erase_shot(x,y)
+                        self.finish_shot_firing(False, 1)
+                    elif self.shot_path_index > 2 and circle_rect.colliderect(self.p2_tank.get_rect()):
+                        self.erase_shot(x,y)
+                        self.finish_shot_firing(False, 2)
+                    elif self._map.didShotHitMountain(circle_rect, self.current_power, self._windowSurfaceObj):
                         self.erase_shot(x,y)
                         self.finish_shot_firing(True)
+
 
 
                 #Increase the index
@@ -184,7 +206,16 @@ class Interface():
 
                 self.finish_shot_firing(False)
 
-            
+            #Redraw both tanks (just in case the shot hit the tank)
+            self.erase_tank(self.p1_tank)
+            self.draw_tank(self.p1_tank)
+            self.erase_tank(self.p2_tank)
+            self.draw_tank(self.p2_tank)
+
+            #If game over
+            if self.mode == Modes.GameOver:
+                #Call animation to destroy the tank
+                self.explode_tank(self.enemy_team)
 
 
     def draw_bar(self):
@@ -222,8 +253,13 @@ class Interface():
 
         #draw game information
         y = 0
-        y += 5 + self.draw_info_text('Day {}'.format(self.turn), BIG_FONT, BIG_FONT_SIZE, y, 1)
-        y += self.draw_info_text('Player {}\'s turn'.format(self.players_turn), FONT, FONT_SIZE, y, 1)
+        if self.mode == Modes.GameOver:
+            y += 5 + self.draw_info_text('Game Over!', BIG_FONT, BIG_FONT_SIZE, y, 1)
+            y += self.draw_info_text('Player {} won!'.format(self.players_turn), MEDIUM_FONT, MEDIUM_FONT_SIZE, y, 1)
+        else:
+            y += 5 + self.draw_info_text('Day {}'.format(self.turn), BIG_FONT, BIG_FONT_SIZE, y, 1)
+            y += self.draw_info_text('Player {}\'s turn'.format(self.players_turn), FONT, FONT_SIZE, y, 1)
+
 
         #If we are firing, draw the power bar
         if self.mode == Modes.Firing:
@@ -335,6 +371,11 @@ class Interface():
         pygame.draw.rect(self._windowSurfaceObj, self._bg_color, (tank.position[0],tank.position[1]-45,103,85))
         #pygame.draw.rect(self._windowSurfaceObj, self._bg_color, tank.get_rect())
     
+    def explode_tank(self, tank):
+        """
+        Animation to destroy tank
+        """
+        self.erase_tank(tank)
 
     @property
     def cur_team(self):
@@ -346,6 +387,15 @@ class Interface():
         else:
             return self.p2_tank
        
+    @property
+    def enemy_team(self):
+        """
+        Returns the string name of the tank who's turn it currently is. 
+        """
+        if self.players_turn == 1:
+            return self.p2_tank
+        else:
+            return self.p1_tank
 
     def move_event(self, event):
         """
@@ -471,30 +521,61 @@ class Interface():
         
         self.change_mode(Modes.Draw_Shot)
 
-        if self.players_turn == 1:
-            enemy_tank = self.p2_tank
-        else:
-            enemy_tank = self.p1_tank
-
+        enemy_tank = self.enemy_team
         current_tank = self.cur_team
 
         self.current_shot = Shot(self.current_power, current_tank.get_angle(), current_tank, enemy_tank, self._map_resolution[1], self._map_resolution[0])
         self.shot_path = self.current_shot.get_path()
         self.shot_path_index = 0 
+
+        #play shot sound
+        self.sound_controller.play("TankFire");
+        #self.sound_controller.play("BombDrop");
          
 
-    def finish_shot_firing(self, didHitMountain):
+    def finish_shot_firing(self, didHitMountain, did_hit_team=0):
         """
         This method is called after we finish drawing the shot and need to finish the player's turn
         """
+        enemy_tank = self.enemy_team
+        current_tank = self.cur_team
+
+        self.sound_controller.play("Explosion");
+
+
         if self.players_turn == 1:
-            enemy_tank = self.p2_tank
+            enemy_team_number = 2
         else:
-            enemy_tank = self.p1_tank
+            enemy_team_number = 1
+
+            
 
         #If we didn't hit the mountain and did hit the other tank, decrease his hp
-        if not didHitMountain and self.current_shot.check_hit():
-            enemy_tank.take_damage(self.current_power*0.8)
+        if not didHitMountain and did_hit_team == enemy_team_number:
+            enemy_tank.take_damage(self.current_power*HIT_PERCENTAGE)
+
+            #If the enemy was killed, game over!
+            if not enemy_tank.active:
+                self.change_mode(Modes.GameOver)
+                self.erase_tank(enemy_tank)
+                return
+
+        #If we didn't hit the mountain, friendly fire is on and we did hit ourselves
+        if not didHitMountain and self.friendly_fire and did_hit_team == self.players_turn:
+            current_tank.take_damage(self.current_power*HIT_PERCENTAGE)
+
+            #If the played killed himself, game over!
+            if not current_tank.active:
+                if self.players_turn == 1:
+                    self.players_turn = 2
+                else:
+                    self.players_turn = 1
+
+                self.change_mode(Modes.GameOver)
+                self.erase_tank(current_tank)
+                return
+
+
 
         self.change_mode(Modes.Move)
         self.next_turn()

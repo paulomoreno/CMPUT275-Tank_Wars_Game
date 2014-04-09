@@ -73,11 +73,15 @@ class Shot():
         """
         return self.path
 
-    def check_hit(self):
+    def check_hit(self, tank=None):
         """
-        Checks if the current path hits the enemy tank
+        Checks if the current path hits the enemy tank.
+        If none defined, uses the enemy_tank as default
         """
-        tank_rect = self.enemy_tank.get_rect()
+        if not tank:
+            tank_rect = self.enemy_tank.get_rect()
+        else:
+            tank_rect = tank.get_rect()
 
         for point in self.path:
             if tank_rect.collidepoint(point):

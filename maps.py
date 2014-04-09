@@ -24,8 +24,6 @@ class Map():
         # Load the .gif map file
         self._loadMap()
 
-        self.square_root_2 = math.sqrt(2)
-
     def _loadMap(self):
         """
         Load the .gif file and set the pixels dictionary accordingly
@@ -63,14 +61,6 @@ class Map():
             If it did, return True and destroy the mountain according to
             a explosion radius
         """
-
-        new_rect_side = circle_rect.w
-        offset = round((circle_rect.w - new_rect_side)/2)
-
-        circle_rect.w = new_rect_side
-        circle_rect.h = new_rect_side
-
-        circle_rect = circle_rect.move(-offset, -offset)
 
         collide = False
 
